@@ -1,0 +1,15 @@
+{
+  "name": "sc2match-obs-overlay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,4 +1,4 @@
-const gameInfoURL = "http://localhost:3000/gameInfo";
+const gameInfoURL = "http://localhost:3000/api/gameInfo";
 
 let glitchTextEl;
 let containerEl;

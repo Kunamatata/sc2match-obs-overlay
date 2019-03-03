@@ -5,30 +5,20 @@ const fs = require('fs');
 
 const app = express();
 const port = 3000
+const routes = require('./routes/');
+
 const scEventEmitter = new EventEmitter;
 
 const clientGameURL = 'http://localhost:6119/game';
 const clientUiURL = 'http://localhost:6119/ui';
 const unmaskedURL = 'http://sc2unmasked.com/API/Player?'
 
-const conf = require('./conf.json');
+const conf = require('./configs/conf.json');
+
 let previousGameState = "inMenu";
 
-let debugInfo = {
-  server: conf.server,
-
-  players: [{
-      name: 'Kunamatata',
-      race: 'T'
-    },
-    {
-      name: "Uzikoti",
-      race: "T"
-    }
-  ]
-}
-
 app.use(express.static('public'));
+app.use('/api', routes);
 
 app.listen(port, () => console.log(`Listening on port: ${port}!`))
 
@@ -101,18 +91,6 @@ async function getUnmaskedData(gameInfo) {
   throw new Error('One or more players could not be found');
 }
 
-
-
-app.get('/gameInfo', async(req, res, next) => {
-  fs.readFile('./game-data.json', (err, data) => {
-    if (err) {
-      res.send({});
-
-    }
-    return res.json(JSON.parse(data))
-  })
-});
-
 async function checkGameState() {
   try {
     let { data } = await axios.get(clientUiURL);
@@ -139,7 +117,7 @@ scEventEmitter.on('gameJoined', async() => {
   let data = await getClientData();
   let gameInfo = processClientData(data);
   let unmaskedData = await getUnmaskedData(gameInfo);
-  writeFile('./game-data.json', JSON.stringify(unmaskedData));
+  writeFile('./data/game-data.json', JSON.stringify(unmaskedData));
   console.log(unmaskedData)
 })
 

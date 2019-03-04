@@ -12,16 +12,16 @@ class StarcraftManager extends EventEmitter {
   async checkGameState() {
     try {
       const { data } = await axios.get(clientUiURL);
-      if (data.activeScreens.length === 0 && this.previousGameState !== 'gameJoined') {
+      if (data.activeScreens.length === 0 && this.previousGameState !== 'game-joined') {
         console.log('emitting game-joined event');
         this.emit('game-joined');
         this.previousGameState = 'game-joined';
-      } else if (data.activeScreens.length !== 0 && this.previousGameState !== 'inMenu') {
+      } else if (data.activeScreens.length !== 0 && this.previousGameState !== 'in-menu') {
         this.emit('game-left');
         this.previousGameState = 'in-menu';
       }
     } catch (e) {
-      throw new Error('Starcraft is not running!');
+      throw Error('Starcraft is not running!');
     }
   }
 }

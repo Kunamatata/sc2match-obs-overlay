@@ -10,7 +10,7 @@ const routes = require('./routes/');
 const clientGameURL = 'http://localhost:6119/game';
 const unmaskedURL = 'http://sc2unmasked.com/API/Player?';
 
-const conf = require('./configs/conf.json');
+const config = require('./configs/config');
 
 const starcraftManager = new StarcraftManager();
 
@@ -38,25 +38,19 @@ async function getClientData() {
 }
 
 function processClientData(data) {
-  let gameInfo = {};
+  const gameInfo = {
+    server: config.server,
+    players: [],
+  };
   if (data !== null && data.players.length > 1) {
-    gameInfo = {
-      server: conf.server,
-
-      players: [{
-          name: data.players[0].name,
-          race: data.players[0].race,
-        },
-        {
-          name: data.players[1].name,
-          race: data.players[1].race,
-        },
-      ],
-    };
-
-    return gameInfo;
+    data.players.forEach((player) => {
+      gameInfo.players.push({
+        name: player.name,
+        race: player.race,
+      });
+    });
   }
-  return gameInfo.players = [];
+  return gameInfo;
 }
 
 /**
@@ -96,13 +90,17 @@ async function getUnmaskedData(gameInfo) {
  * When a game starts the event emitter emits "game-joined"
  * event which kickstarts the process to get data about the players.
  */
-starcraftManager.on('game-joined', async() => {
+starcraftManager.on('game-joined', async () => {
   console.log('new game entered');
-  const data = await getClientData();
-  const gameInfo = processClientData(data);
-  const unmaskedData = await getUnmaskedData(gameInfo);
-  writeFile('./data/game-data.json', JSON.stringify(unmaskedData));
-  console.log(unmaskedData);
+  try {
+    const data = await getClientData();
+    const gameInfo = processClientData(data);
+    const unmaskedData = await getUnmaskedData(gameInfo);
+    writeFile('./data/game-data.json', JSON.stringify(unmaskedData));
+    console.log(unmaskedData);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 
@@ -124,17 +122,20 @@ async function retry(delay = 5000, limit = 30000, callback) {
       setTimeout(() => {
         retry(delay, limit, callback);
       }, delay);
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err)
+      console.log(delay)
       setTimeout(() => {
-        delay >= limit ? limit : delay * 2;
-        retry(delay, limit, callback);
+        retry(delay >= limit ? limit : delay * 2, limit, callback);
       }, delay);
     }
   }
 }
 
-retry(5000, 30000, starcraftManager.checkGameState);
+
+retry(2000, 30000, async () => {
+  await starcraftManager.checkGameState();
+});
 
 // Testing the unmasked function
 // getUnmaskedData(debugInfo).then(data => console.log(data)).catch(e => console.log(e))

@@ -1,16 +1,16 @@
 const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
+const config = require('./configs/config');
 const StarcraftManager = require('./libs/StarcraftManager');
 
 const app = express();
-const port = 3000;
+const port = config.port || 3000;
 const routes = require('./routes/');
 
 const clientGameURL = 'http://localhost:6119/game';
 const unmaskedURL = 'http://sc2unmasked.com/API/Player?';
 
-const config = require('./configs/config');
 
 const starcraftManager = new StarcraftManager();
 

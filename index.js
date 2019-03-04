@@ -124,7 +124,6 @@ async function retry(delay = 5000, limit = 30000, callback) {
       }, delay);
     } catch (err) {
       console.log(err)
-      console.log(delay)
       setTimeout(() => {
         retry(delay >= limit ? limit : delay * 2, limit, callback);
       }, delay);

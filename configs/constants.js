@@ -1,5 +1,7 @@
-const server = {
-  'na': 'us',
-  'eu': 'eu',
-  'kr': 'kr'
-}
+const CONSTANTS = {
+  NA: 'us',
+  EU: 'eu',
+  KR: 'kr',
+};
+
+module.exports = CONSTANTS;
